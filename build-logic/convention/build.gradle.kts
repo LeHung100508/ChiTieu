@@ -6,13 +6,11 @@ plugins {
 }
 
 dependencies {
-    // Để code của bạn dùng được API của Android Gradle Plugin và Kotlin
-    compileOnly(libs.android.gradlePlugin)
-    compileOnly(libs.kotlin.gradlePlugin)
-    // Hoặc khai báo trực tiếp artifact: "com.android.tools.build:gradle:..."
-    compileOnly(libs.room.gradlePlugin)
-    compileOnly(libs.ksp.gradlePlugin)
-    compileOnly(libs.hilt.gradlePlugin)
+    implementation(libs.android.gradlePlugin)
+    implementation(libs.kotlin.gradlePlugin)
+    implementation(libs.room.gradlePlugin)
+    implementation(libs.ksp.gradlePlugin)
+    implementation(libs.hilt.gradlePlugin)
 }
 
 gradlePlugin {
