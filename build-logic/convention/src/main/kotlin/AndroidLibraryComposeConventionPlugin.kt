@@ -12,6 +12,7 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
                 configureKotlinAndroid(this)
                 configureAndroidCompose(this)
             }
+            configureDetekt()
         }
     }
 }

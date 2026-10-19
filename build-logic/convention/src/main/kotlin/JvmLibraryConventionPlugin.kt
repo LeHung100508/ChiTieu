@@ -21,6 +21,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
                     jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
                 }
             }
+            configureDetekt()
         }
     }
 }

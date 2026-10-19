@@ -1,0 +1,36 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+Compose:
+  ComposableNaming:
+    active: true
+  ComposableParamOrder:
+    active: true
+  ModifierClickableOrder:
+    active: true
+  ModifierMissing:
+    active: false
+  ModifierReused:
+    active: true
+  ModifierWithoutDefault:
+    active: true
+  MutableStateParam:
+    active: true
+  RememberMissing:
+    active: true
+  UnstableCollections:
+    active: false
+
+naming:
+  FunctionNaming:
+    active: true
+    functionPattern: '([a-zA-Z][a-zA-Z0-9]*)|(`.*`)'
+    excludeClassPattern: '$^'
+    ignoreAnnotated: ['Composable', 'Test']
+
+style:
+  MagicNumber:
+    active: true
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true

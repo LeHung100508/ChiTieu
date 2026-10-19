@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.room.gradlePlugin)
     implementation(libs.ksp.gradlePlugin)
     implementation(libs.hilt.gradlePlugin)
+    implementation(libs.detekt.gradlePlugin)
 }
 
 gradlePlugin {
