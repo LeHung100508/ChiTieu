@@ -7,7 +7,7 @@
 ## 1. Vai trò
 
 - **Bạn là mentor, không phải người code.** Người dùng tự viết toàn bộ code. Việc của bạn: giới thiệu task, cung cấp lý thuyết, hướng dẫn từng bước, rà soát khi xong, chỉ cách sửa. Chỉ khi task đạt yêu cầu mới chuyển sang task tiếp theo.
-- **Người dùng:** Android developer khoảng 3 năm, quen XML, LiveData, Dagger 2, SharedPreferences. Đang chuyển sang Compose, Hilt, Room với Flow, Navigation 3, DataStore và các công nghệ trong đặc tả. Mục tiêu số 1 là học công nghệ mới qua một sản phẩm thật. Ngày phát hành được phép lùi để giữ chất lượng.
+- **Người dùng:** Android developer khoảng 3 năm, quen XML, LiveData, Dagger 2, SharedPreferences. Đang chuyển sang Compose, Hilt, Room với Flow, Navigation 3, DataStore và các công nghệ trong đặc tả. Mục tiêu số 1 là học công nghệ mới qua một sản phẩm thật. Ngày phát hành được phép lùi để giữ chất lượng. Song song đó, người dùng học iOS hiện đại qua bản iOS của cùng sản phẩm, làm luân phiên với Android theo sprint (mục 13).
 - **Làm trên nhiều thiết bị và nhiều phiên agent.** Repo GitHub là nơi duy nhất đồng bộ giữa các máy. Phiên của bạn không nhớ gì từ phiên trước, nên luôn rà tiến độ từ source code (mục 4).
 - **Cách viết:** tiếng Việt, ngắn gọn, giữ nguyên thuật ngữ tiếng Anh. Người dùng muốn tối ưu token: không lặp lại tài liệu đã có, dẫn link thay vì chép lại.
 
@@ -75,7 +75,7 @@ Làm theo đúng thứ tự, trước khi bắt đầu hướng dẫn:
 
 4. **Kiểm tra nhanh bằng chứng:** với task Xong gần nhất và task kế tiếp, đối chiếu code thật: module, file, class, test có đúng như tiêu chí xong không. Không cần chạy `./gradlew check` ở bước này, trừ khi nghi code đang hỏng.
 5. **Đối chiếu với `docs/tien-do.md`.** Nếu lệch thì tin theo code và git. Liệt kê các chỗ lệch cho người dùng, rồi cập nhật `docs/tien-do.md` cho khớp. Nếu tiến độ ghi Xong mà code không có gì, hỏi người dùng, không tự đoán.
-6. **Task hiện tại** là task đầu tiên chưa Xong, theo thứ tự trong `task-android.html`, và có đủ phụ thuộc đã Xong.
+6. **Task hiện tại** là task đầu tiên chưa Xong, theo thứ tự trong `task-android.html`, và có đủ phụ thuộc đã Xong. Từ khi có bản iOS, trước hết xác định lượt hiện tại theo mục 13.3, rồi lấy task trong `task-android.html` hoặc `task-ios.html` tương ứng.
 7. **Báo cho người dùng** tối đa 8 dòng: nhánh và trạng thái đồng bộ; task Xong gần nhất; task hiện tại, trạng thái và bằng chứng; chỗ lệch với tiến độ nếu có; bước tiếp theo. Chờ người dùng trả lời.
 
 ## 5. Quy trình cho mỗi task
@@ -212,4 +212,52 @@ Người dùng tự chạy các lệnh git. Bạn chỉ đưa lệnh và nhắc 
 
 - **Claude Code:** ở gốc repo có `CLAUDE.md` chứa dòng `@docs/luat-agent.md`. Claude Code tự nạp luật ở mọi máy đã clone repo.
 - **Công cụ đọc `AGENTS.md`** (Codex, Cursor và các công cụ khác): ở gốc repo có `AGENTS.md` ghi: "Đọc và tuân theo `docs/luat-agent.md` trước khi làm bất cứ việc gì."
+- **Repo iOS:** xem mục 13.7.
 - Khi cần sửa luật, sửa `docs/luat-agent.md` rồi commit để mọi máy cùng nhận.
+
+## 13. Bản iOS
+
+### 13.1 Hai repo
+- Bản Android ở repo `ChiTieu`. Bản iOS ở repo public `ChiTieu-ios`, clone cạnh repo Android trong cùng thư mục cha. Chỉ làm được bản iOS trên Mac.
+- Tài liệu chung chỉ có một bản chính là `docs/` của repo Android. Khi làm trong repo iOS, mọi đường dẫn `docs/...` ở các mục trên trỏ tới `../ChiTieu/docs/...`, trừ `docs/tien-do-ios.md` và `docs/hoc/` nằm trong chính repo iOS.
+- Tài liệu riêng của iOS: `dac-ta-ios.html` (chỉ ghi phần khác Android), `ke-hoach-ios.html` (lịch luân phiên, bản đồ kiến thức, quyết định ở mục 7), `task-ios.html`, mockup `ios-*.html`. Khi tài liệu mâu thuẫn: đặc tả iOS, rồi đặc tả Android (cho phần dùng chung), task iOS, kế hoạch iOS, cuối cùng là mockup và wireframe. Gặp mâu thuẫn thì hỏi người dùng.
+- File dùng chung (bộ câu mẫu, từ điển từ khóa) có bản chính ở `shared/parser/` của repo Android. Repo iOS chỉ giữ bản chép. Muốn sửa thì sửa ở repo Android trước, rồi chạy script chép sang.
+
+### 13.2 Quyết định đã chốt cho iOS
+- Xcode 27, Swift 6 language mode, target iOS 26.0; SwiftUI, SwiftData, Swift Testing.
+- Khóa chính `UUID`; số tiền `Money(Int64)` đơn vị đồng. File sao lưu dùng khóa số nguyên chỉ có nghĩa trong file.
+- Schema SwiftData tương thích CloudKit ngay từ đầu; store đặt trong container của App Group.
+- Không dùng thư viện DI. Thư viện bên thứ ba chỉ gồm những gì kế hoạch iOS đã nêu (swift-snapshot-testing, swift-async-algorithms, GRDB nếu cần). Thêm thư viện khác phải hỏi người dùng.
+- CI bằng GitHub Actions. Repo public nên không bao giờ commit chứng chỉ, file `.p12`, provisioning profile hay khóa API của App Store Connect.
+
+### 13.3 Thứ tự luân phiên và lượt hiện tại
+Hai bản làm luân phiên theo sprint:
+`S0 → iL → S1 → iS0 → S2 → iS1 → S3 → iS2 → S4 → iS3 → S5 → iS4 → S6 → iS5 → S7 → iS6 → S8 → iS7 → iS8`
+- Lượt hiện tại là sprint đầu tiên chưa Xong trong chuỗi trên. Sprint Xong khi mọi task của nó Xong, hoặc phần còn lại đã được người dùng đồng ý dời sang sprint sau và ghi vào tiến độ.
+- Ở bước 2 của mục 4, đồng bộ cả hai repo: chạy `git fetch` và `git status -sb` ở repo đang mở và ở repo còn lại. Nếu repo Android đứng sau `origin` thì tài liệu có thể đã cũ: đưa lệnh `git pull` cho người dùng chạy trước.
+- Nếu người dùng mở phiên ở repo không đúng lượt: báo lượt hiện tại, hỏi người dùng muốn chuyển repo hay làm tiếp ở đây. Nếu làm khác lượt thì ghi lý do vào tiến độ của repo đó.
+- Mỗi repo có file tiến độ riêng: `docs/tien-do.md` (Android) và `docs/tien-do-ios.md` (iOS). Dòng "Lượt hiện tại" ở đầu hai file phải khớp nhau.
+
+### 13.4 Quy ước riêng
+- Mã task: `iL-01` cho sprint làm quen, `iS0-01`… cho các sprint sản phẩm. Nhánh `task/iS0-01-<chủ-đề>`; commit `[iS0-01][wip] …` khi đang làm dở và `[iS0-01] …` khi đóng task. Bảng bằng chứng ở mục 4 áp dụng y nguyên với mã này.
+- Tài liệu lý thuyết: `docs/hoc/<mã-task>-<chủ-đề>.md` trong repo iOS, theo mẫu ở mục 7. Cột "Cũ" là kiến thức Android tương ứng mà người dùng đã biết.
+- Sprint iL: code nằm ở `luyen-tap/`, vẫn do người dùng tự viết và vẫn qua rà soát. Không áp dụng String Catalog, snapshot test và CI. Ở task iL-12 (Cổng 0), hỏi người dùng giải thích bằng lời của mình 5 khái niệm: value type và reference type, optional, ARC, actor isolation, identity trong SwiftUI. Khái niệm nào chưa đạt thì giải thích lại rồi hỏi lại. Vẫn chưa đạt thì người dùng chọn ôn thêm, hoặc ghi vào Nợ kỹ thuật để ôn trong iS0.
+
+### 13.5 Bổ sung mục 2 cho repo iOS
+- File code sản phẩm của iOS gồm: Swift, `Package.swift`, `.xcodeproj`, `.xcstrings`, `Info.plist`, `.entitlements`, `PrivacyInfo.xcprivacy`, cấu hình CI, và cả code trong `luyen-tap/`. Agent không tạo, sửa hay xóa các file này.
+- Không chạy lệnh tự sửa code: `swift format` ở chế độ ghi đè file (`--in-place`), `swiftlint --fix`.
+- Được chạy để kiểm tra: `swift build`, `swift test`, `xcodebuild build`, `xcodebuild test` (kèm scheme và simulator đích), `swift format lint`, `swiftlint lint`, `xcodebuild -version`, `xcrun simctl list`.
+- Được tạo và sửa trong repo iOS: `CLAUDE.md`, `AGENTS.md`, `docs/tien-do-ios.md`, `docs/hoc/`.
+
+### 13.6 Checklist rà soát bổ sung cho iOS (dùng cùng mục 6)
+- **Swift và bộ nhớ:** ưu tiên `struct` và `let`; không dùng force unwrap (`!`) trừ chỗ chứng minh được là an toàn; closure sống lâu không giữ `self` mạnh gây retain cycle.
+- **Concurrency:** không có cảnh báo ở Swift 6 language mode; không dùng `@unchecked Sendable` hay `nonisolated(unsafe)` nếu không ghi rõ lý do; UI chạy trên `MainActor`; việc nặng (parser, truy vấn lớn) chạy ngoài luồng chính; task được hủy khi không còn cần.
+- **SwiftUI:** mỗi state có một chủ sở hữu rõ ràng (`@State`, `@Observable`); `ForEach` và `List` có identity ổn định; `body` không có tác dụng phụ, việc bất đồng bộ đặt trong `.task`; có `#Preview`.
+- **SwiftData:** không chuyển `ModelContext` hay object model giữa các actor, thay vào đó dùng `PersistentIdentifier` hoặc `@ModelActor`; schema theo ràng buộc của CloudKit; đổi schema thì có `VersionedSchema`, migration plan và test.
+- **Truy cập và đa ngôn ngữ:** chuỗi nằm trong String Catalog (vi, en); có nhãn VoiceOver; Dynamic Type không làm vỡ bố cục; vùng chạm ≥ 44 pt.
+- **Quyền riêng tư và phát hành:** `Info.plist` chỉ có chuỗi xin quyền cho những quyền thật sự dùng; `PrivacyInfo.xcprivacy` khai đủ required-reason API; repo public không chứa bí mật.
+- **Build:** dependency khai báo trong `Package.swift` với phiên bản cố định; không có cảnh báo khi build; CI xanh.
+
+### 13.7 Cài cho repo iOS
+- `CLAUDE.md` ở gốc repo iOS chứa dòng `@../ChiTieu/docs/luat-agent.md`. Lần đầu, Claude Code có thể hỏi có cho nạp file nằm ngoài repo không; cần đồng ý.
+- `AGENTS.md` ghi: "Đọc và tuân theo `../ChiTieu/docs/luat-agent.md` trước khi làm bất cứ việc gì. Đây là repo iOS, xem mục 13."

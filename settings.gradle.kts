@@ -14,6 +14,15 @@ pluginManagement {
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.11"
+}
+
+kover {
+    enableCoverage()
+    reports {
+        // Loại trừ module benchmark vì đây là test APK, không cần đo code coverage
+        excludedProjects.add(":benchmarks")
+    }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)

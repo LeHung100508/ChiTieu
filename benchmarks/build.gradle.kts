@@ -14,3 +14,8 @@ android {
 
     targetProjectPath = ":app"
 }
+
+// Khai báo phụ thuộc rõ ràng để thỏa mãn Task Validation của Gradle
+tasks.matching { it.name.startsWith("kover") }.configureEach {
+    dependsOn(tasks.matching { it.name.startsWith("compile") })
+}
