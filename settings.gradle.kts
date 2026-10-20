@@ -19,10 +19,7 @@ plugins {
 
 kover {
     enableCoverage()
-    reports {
-        // Loại trừ module benchmark vì đây là test APK, không cần đo code coverage
-        excludedProjects.add(":benchmarks")
-    }
+    skipProjects(":benchmarks")
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
