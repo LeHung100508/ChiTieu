@@ -73,8 +73,8 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(-
 <h2>1. Giả định và cách làm việc</h2>
 <ul>
 <li><b>Năng lực và nhịp:</b> vẫn 10–12 giờ mỗi tuần, 22 giờ mỗi sprint. Hai bản luân phiên theo sprint: xong một sprint Android thì làm một sprint iOS. Mỗi bản vì thế chỉ đi được nửa tốc độ, kể cả Android (xem mục 3). Lượng kiến thức mới trên iOS nhiều hơn, nên dự kiến có sprint sẽ trễ. Khi trễ thì dời việc sang sprint sau, không làm vội.</li>
-<li><b>Repo:</b> code iOS ở repo riêng, để public, tên đề xuất <code>ChiTieu-ios</code>. Trên mọi máy Mac, clone repo này cạnh repo Android (cùng thư mục cha), vì tài liệu vẫn nằm ở <code>docs/</code> của repo Android. Agent ở repo iOS đọc tài liệu qua <code>../ChiTieu/docs</code>. Tiến độ iOS ghi ở <code>docs/tien-do-ios.md</code> trong repo iOS. Repo để public nên không bao giờ commit chứng chỉ, file <code>.p12</code>, provisioning profile hay khóa API của App Store Connect.</li>
-<li><b>File dùng chung:</b> bộ câu mẫu, từ điển từ khóa, danh sách cột CSV và định dạng sao lưu có bản chính ở repo Android. Repo iOS chép các file này sang bằng một script, kèm test kiểm tra checksum để phát hiện khi hai bên lệch nhau.</li>
+<li><b>Repo:</b> ba repo trên GitHub, đều public: <code>ChiTieu</code> (Android), <code>ChiTieu-ios</code> (iOS) và <code>ChiTieu-docs</code> (tài liệu). Hai repo ứng dụng độc lập với nhau, clone ở đâu cũng được. Repo tài liệu được gắn vào cả hai dưới dạng git submodule tại <code>docs/</code>, nên agent ở repo nào cũng đọc tài liệu qua <code>docs/</code>, và tự nhận nền tảng nhờ dòng <code>Nền tảng:</code> trong <code>CLAUDE.md</code>. Tiến độ iOS ghi ở <code>docs/tien-do-ios.md</code>. Mỗi lần commit có hai bước: commit trong <code>docs/</code> trước, rồi commit con trỏ submodule ở repo ứng dụng (mục 13.4 của luật). Repo iOS để public nên không bao giờ commit chứng chỉ, file <code>.p12</code>, provisioning profile hay khóa API của App Store Connect.</li>
+<li><b>File dùng chung:</b> bộ câu mẫu và từ điển từ khóa nằm ở <code>docs/shared/parser/</code>; test của cả hai bản đọc trực tiếp, không chép sang chỗ khác. Danh sách cột CSV và định dạng sao lưu cũng ghi trong repo tài liệu. CI của hai repo ứng dụng phải checkout kèm submodule.</li>
 <li><b>Máy:</b> chỉ làm iOS được trên Mac Apple silicon. Máy này chạy macOS 27.0.1, đủ điều kiện cho Xcode 27 (cần Tahoe 26.6 trở lên), nhưng <b>chưa cài Xcode</b>, mới có Command Line Tools với Swift 6.4. Trên máy Windows chỉ làm được Android và đọc tài liệu.</li>
 <li><b>Thiết bị:</b> iPhone của bạn ra đời trước iPhone 15 Pro. Như vậy là đủ cho gần hết các sprint, miễn máy chạy được iOS 26 (iPhone 11 trở lên). Riêng FR-10 và FR-29 không chạy được trên máy này; cách xử lý ở iS6. CloudKit và TestFlight cần Apple Developer Program (99 USD/năm).</li>
 <li><b>Quy trình:</b> giống bản Android. Agent làm mentor, bạn tự code. Mã task có dạng <code>iL-01</code>, <code>iS0-01</code>; commit <code>[iS0-01]</code>; nhánh <code>task/iS0-01-...</code>. Commit <code>[wip]</code> khi đổi máy, commit đóng task sau khi rà soát đạt.</li>
@@ -327,7 +327,7 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(-
 <table>
 <thead><tr><th>Việc</th><th>Chi tiết</th><th class="num">Giờ</th></tr></thead>
 <tbody>
-<tr><td>Cài môi trường</td><td>Xcode 27 và simulator. Tạo repo public <code>ChiTieu-ios</code> cạnh repo Android, có thư mục luyện tập <code>luyen-tap/</code>. Chạy app mẫu trên simulator và trên iPhone thật bằng Apple ID miễn phí (signing tự động, Developer Mode)</td><td class="num">2,5</td></tr>
+<tr><td>Cài môi trường</td><td>Xcode 27 và simulator. Tạo repo public <code>ChiTieu-ios</code>, gắn submodule tài liệu tại <code>docs/</code>, có thư mục luyện tập <code>luyen-tap/</code>. Chạy app mẫu trên simulator và trên iPhone thật bằng Apple ID miễn phí (signing tự động, Developer Mode)</td><td class="num">2,5</td></tr>
 <tr><td>Swift qua đối chiếu với Kotlin</td><td>Optional, <code>struct</code> và <code>class</code>, <code>enum</code> có associated value, protocol, extension, generics, closure, xử lý lỗi. Mỗi chủ đề có bài tập nhỏ kèm test bằng Swift Testing</td><td class="num">6,5</td></tr>
 <tr><td>Bộ nhớ</td><td>ARC, cố ý tạo một retain cycle rồi tìm nó bằng Memory Graph Debugger</td><td class="num">1,5</td></tr>
 <tr><td>Swift concurrency nhập môn</td><td><code>async</code>/<code>await</code>, <code>Task</code>, actor, <code>Sendable</code>, <code>@MainActor</code>; bật Swift 6 language mode và tập đọc hiểu lỗi của compiler</td><td class="num">4</td></tr>
@@ -346,11 +346,11 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(-
 <table>
 <thead><tr><th>Việc</th><th>Chi tiết</th><th class="num">Giờ</th></tr></thead>
 <tbody>
-<tr><td>Tạo project</td><td>Xcode 27, target iOS 26.0, Swift 6 language mode, mặc định <code>MainActor</code>. Chốt Bundle ID và App Group ID. Dùng nhóm thư mục đồng bộ của Xcode để giảm xung đột file <code>.pbxproj</code> khi làm trên nhiều máy. <code>CLAUDE.md</code> và <code>AGENTS.md</code> trỏ tới luật ở repo Android</td><td class="num">2</td></tr>
+<tr><td>Tạo project</td><td>Xcode 27, target iOS 26.0, Swift 6 language mode, mặc định <code>MainActor</code>. Chốt Bundle ID và App Group ID. Dùng nhóm thư mục đồng bộ của Xcode để giảm xung đột file <code>.pbxproj</code> khi làm trên nhiều máy</td><td class="num">2</td></tr>
 <tr><td>Chia package</td><td>Local package <code>Core/{Parser, Model, Data, DesignSystem, Testing}</code> và <code>Features/{QuickAdd, Transactions, Budget, Stats, Settings, Onboarding}</code>. Quy tắc phụ thuộc: Parser là Swift thuần, Feature không phụ thuộc Feature khác. Phần lớn code nằm trong package, target App chỉ lắp ghép</td><td class="num">2,5</td></tr>
-<tr><td>Chất lượng mã và CI</td><td>swift-format và SwiftLint. GitHub Actions trên runner macOS (miễn phí vì repo public), chọn đúng phiên bản Xcode của runner; chạy build, lint, test và báo coverage trên mỗi pull request</td><td class="num">3</td></tr>
+<tr><td>Chất lượng mã và CI</td><td>swift-format và SwiftLint. GitHub Actions trên runner macOS (miễn phí vì repo public), chọn đúng phiên bản Xcode của runner; chạy build, lint, test và báo coverage trên mỗi pull request; checkout kèm submodule <code>docs/</code> vì test parser đọc <code>docs/shared/parser/</code></td><td class="num">3</td></tr>
 <tr><td>Design system</td><td>Màu thương hiệu <code>#1B6B4A</code> cho sáng và tối, chữ theo Dynamic Type, các component: số tiền, chip, thẻ tổng. Ưu tiên component hệ thống để có sẵn Liquid Glass. Có Preview</td><td class="num">2,5</td></tr>
-<tr><td>Bộ phân tích câu (TDD)</td><td>Script chép bộ câu mẫu và từ điển từ khóa từ repo Android, kèm test checksum; đọc JSON bằng <code>Codable</code>; chuẩn hóa và bỏ dấu tiếng Việt; số tiền (FR-02); thời gian (FR-03, inject <code>Calendar</code> và thời điểm hiện tại); danh mục theo từ khóa và tách nhiều khoản (FR-04, FR-07); mỗi trường có độ tin cậy từ 0 đến 1</td><td class="num">10</td></tr>
+<tr><td>Bộ phân tích câu (TDD)</td><td>Đọc bộ câu mẫu và từ điển từ khóa ở <code>docs/shared/parser/</code> bằng <code>Codable</code> (file nằm ngoài package, cần tìm cách cho test đọc được); chuẩn hóa và bỏ dấu tiếng Việt; số tiền (FR-02); thời gian (FR-03, inject <code>Calendar</code> và thời điểm hiện tại); danh mục theo từ khóa và tách nhiều khoản (FR-04, FR-07); mỗi trường có độ tin cậy từ 0 đến 1</td><td class="num">10</td></tr>
 <tr><td>Đo hiệu năng parser</td><td>Đo bằng XCTest, mục tiêu ≤ 50 ms mỗi câu (NFR-02)</td><td class="num">1</td></tr>
 <tr><td>Đối chiếu với Android <span class="new">MỚI</span></td><td>Chạy cùng bộ câu trên cả hai parser; câu nào cho kết quả khác thì ghi lý do và sửa một bên</td><td class="num">1</td></tr>
 </tbody>
@@ -527,11 +527,11 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(-
 <tr><td>SwiftData chậm với 10.000 giao dịch hoặc khi tìm kiếm</td><td>NFR-03, FR-20</td><td>Đo sớm ở iS3; dự phòng GRDB với FTS5 chỉ cho phần tìm kiếm</td></tr>
 <tr><td>Sửa schema muộn để bật CloudKit</td><td>Phải viết migration, mất dữ liệu tester</td><td>Thiết kế theo ràng buộc CloudKit ngay từ iS1</td></tr>
 <tr><td>Xung đột file <code>.pbxproj</code> khi làm trên nhiều máy</td><td>Mất thời gian gộp nhánh</td><td>Code nằm trong local package; dùng nhóm thư mục đồng bộ; commit <code>[wip]</code> trước khi đổi máy</td></tr>
-<tr><td>Định dạng dùng chung giữa hai bản bị lệch (bộ câu mẫu, CSV, sao lưu)</td><td>Hỏng NFR-16, hai parser cho kết quả khác nhau</td><td>Bản chính ở repo Android; repo iOS chép bằng script và có test checksum; test chéo ở iS0 và iS8</td></tr>
+<tr><td>Định dạng dùng chung giữa hai bản bị lệch (bộ câu mẫu, CSV, sao lưu)</td><td>Hỏng NFR-16, hai parser cho kết quả khác nhau</td><td>Chỉ một bản ở <code>docs/shared/parser/</code>, test của hai bản cùng đọc; test chéo ở iS0 và iS8</td></tr>
 <tr><td>Bị từ chối ở App Review</td><td>Trễ Cổng 3</td><td>Chuẩn bị Privacy Manifest và nhãn quyền riêng tư từ iS4; ghi chú rõ cho reviewer</td></tr>
 <tr><td>Làm song song khiến cả hai bản chậm lại</td><td>Android MVP lùi từ tuần 13 sang khoảng tuần 23</td><td>Chấp nhận, vì mục tiêu số 1 là học. Ghi rõ lịch mới trong kế hoạch Android</td></tr>
 <tr><td>Quên ngữ cảnh khi chuyển qua lại giữa hai bản</td><td>Mất thời gian khởi động mỗi sprint</td><td>Luân phiên theo sprint, không theo ngày. Cuối sprint ghi rõ chỗ dừng vào file tiến độ của từng repo</td></tr>
-<tr><td>Agent ở repo iOS không đọc được tài liệu</td><td>Mentor thiếu căn cứ</td><td>Quy ước clone hai repo cạnh nhau trên mọi máy; kiểm tra ngay khi tạo repo iOS</td></tr>
+<tr><td>Quên commit theo hai bước, hoặc submodule <code>docs/</code> đang trỏ tới bản cũ</td><td>Máy khác thiếu tài liệu, agent hướng dẫn theo tài liệu cũ</td><td>Mục 13.4 của luật: đầu phiên agent kiểm tra submodule; luôn commit trong <code>docs/</code> trước, con trỏ submodule sau</td></tr>
 <tr><td>Không có máy hỗ trợ Apple Intelligence</td><td>FR-10, FR-29 khó kiểm thử</td><td>Thử trên simulator nếu được; nhờ tester TestFlight; parser theo luật vẫn là lõi</td></tr>
 </tbody>
 </table>
@@ -543,7 +543,7 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(-
 <thead><tr><th>#</th><th>Câu hỏi</th><th>Quyết định</th><th>Hệ quả</th></tr></thead>
 <tbody>
 <tr><td>1</td><td>Khi nào bắt đầu iOS?</td><td><b>Song song ngay, luân phiên theo sprint.</b> Xong Android S0 thì làm iL</td><td>Android MVP lùi sang khoảng tuần 23, iOS MVP khoảng tuần 29</td></tr>
-<tr><td>2</td><td>Code iOS để ở đâu?</td><td><b>Repo riêng.</b> Tài liệu và file dùng chung giữ ở repo Android; clone hai repo cạnh nhau</td><td>Repo iOS có script chép file dùng chung kèm test checksum; tiến độ iOS ghi trong repo iOS</td></tr>
+<tr><td>2</td><td>Code iOS để ở đâu?</td><td><b>Repo riêng, độc lập.</b> Tài liệu và file dùng chung tách thành repo <code>ChiTieu-docs</code>, gắn vào cả hai repo ứng dụng dưới dạng submodule tại <code>docs/</code> (đổi ngày 20/10/2026, thay cho cách clone hai repo cạnh nhau)</td><td>Agent tự nhận nền tảng qua dòng <code>Nền tảng:</code> trong <code>CLAUDE.md</code>; commit theo hai bước; tiến độ iOS ở <code>docs/tien-do-ios.md</code></td></tr>
 <tr><td>3</td><td>Mã task</td><td><b><code>iL-01</code>, <code>iS0-01</code></b>; commit <code>[iS0-01]</code>; nhánh <code>task/iS0-01-...</code></td><td>Không trùng với mã task Android</td></tr>
 <tr><td>4</td><td>Khóa chính và khóa trong file sao lưu</td><td><b>iOS dùng <code>UUID</code>.</b> Khóa trong file sao lưu là số nguyên chỉ có nghĩa trong file</td><td>Cần sửa NFR-16 và ghi chú vào task S8-06 của Android</td></tr>
 <tr><td>5</td><td>Sprint làm quen</td><td><b>Giữ iL 2 tuần</b></td><td>–</td></tr>
@@ -553,15 +553,13 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(-
 </table>
 
 <h2 id="sau-khi-chot">8. Việc làm sau khi kế hoạch được duyệt</h2>
-<p>Mỗi việc sửa tài liệu dưới đây cần bạn đồng ý riêng, đúng như <code>luat-agent.md</code>. Việc 1 và 2 gấp hơn cả, vì Android S0-09 và iL sắp tới.</p>
+<p>Mỗi việc sửa tài liệu dưới đây cần bạn đồng ý riêng, đúng như <code>luat-agent.md</code>. Việc 2 phải làm trước khi bắt đầu iL.</p>
 <ol>
-<li><b>Sửa task S0-09 của Android (gấp):</b> đặt bộ câu mẫu và từ điển từ khóa ở một thư mục dùng chung cố định trong repo Android, ví dụ <code>shared/</code>, thay vì nằm sâu trong test resources của <code>core:parser</code>. Như vậy repo iOS mới chép sang được bằng script.</li>
-<li><b>Chia <code>task-ios.html</code>:</b> đã chia iL (12 task, 22 giờ, ngày 20/10/2026). iS0 đến iS8 chia trước khi bắt đầu iS0, tương ứng 107 task Android, cộng các task mới (spike, đối chiếu, script chép file dùng chung).</li>
-<li><b>Sửa <code>luat-agent.md</code>:</b> thêm thứ tự luân phiên giữa hai repo và cách xác định task hiện tại khi có hai repo; lệnh kiểm tra cho iOS (<code>xcodebuild test</code>, <code>swift test</code>, <code>swift format lint</code>, <code>swiftlint</code>); quy ước mã task và nhánh; checklist rà soát cho SwiftUI, SwiftData và concurrency.</li>
+<li><b>Đã xong ngày 20/10/2026:</b> sửa S0-09 và S0-13 của Android để bộ câu mẫu và từ điển nằm ở <code>docs/shared/parser/</code>; chia task iL; thêm mục 13 vào <code>luat-agent.md</code> (ba repo, docs là submodule); cập nhật <code>docs/CLAUDE.md</code>, <code>index.html</code>, cùng <code>CLAUDE.md</code> và <code>AGENTS.md</code> của repo Android.</li>
+<li><b>Tách <code>docs/</code> thành repo <code>ChiTieu-docs</code></b> (sau khi merge PR #1, trước iL-01): tạo repo public, đưa thư mục <code>docs/</code> sang và giữ lịch sử bằng <code>git subtree split</code>, rồi gắn lại vào repo Android dưới dạng submodule tại <code>docs/</code>. Bạn tự chạy lệnh, agent đưa từng lệnh.</li>
+<li><b>Chia iS0 đến iS8 trong <code>task-ios.html</code>:</b> trước khi bắt đầu iS0, tương ứng 107 task Android, cộng các task mới (spike, đối chiếu).</li>
 <li><b>Sửa <code>ke-hoach-android.html</code>:</b> đổi lộ trình sang lịch xen kẽ (MVP khoảng tuần 23, v1.1 tuần 34).</li>
 <li><b>Sửa đặc tả:</b> quy ước khóa trong file sao lưu (NFR-16, cả bản Android và iOS) và ghi chú vào task S8-06; tên API cho FR-11 để lúc làm thì tra lại.</li>
-<li><b>Khi tạo repo iOS ở iL</b> (bạn tự tạo): <code>CLAUDE.md</code> và <code>AGENTS.md</code> trỏ tới luật ở repo Android, cùng file <code>docs/tien-do-ios.md</code>. Kiểm tra agent đọc được <code>../ChiTieu/docs</code> trên máy Mac.</li>
-<li>Cập nhật <code>index.html</code> và <code>docs/CLAUDE.md</code> cho khớp: thêm link tới repo iOS và mô tả lại <code>task-ios.html</code>.</li>
 </ol>
 
 <h2>Nguồn</h2>
