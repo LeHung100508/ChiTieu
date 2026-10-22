@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "hung.lct.chitieu.core.designsystem"
 }
+
+dependencies {
+    api(libs.androidx.compose.material3)
+}
