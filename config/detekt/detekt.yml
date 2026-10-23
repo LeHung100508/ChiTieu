@@ -37,3 +37,12 @@ style:
   UnusedPrivateMember:
     active: true
     ignoreAnnotated: [ 'Preview' ]
+
+complexity:
+  LongParameterList:
+    active: true
+    ignoreDefaultParameters: true
+    ignoreAnnotated: ['Composable']
+  LongMethod:
+    active: true
+    ignoreAnnotated: ['Composable']

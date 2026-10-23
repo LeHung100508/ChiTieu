@@ -1,10 +1,12 @@
 package hung.lct.chitieu.core.designsystem.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import hung.lct.chitieu.core.designsystem.R
 
 private val RobotoFlex = FontFamily(
@@ -77,4 +79,12 @@ val ChiTieuTypography = Typography(
         fontWeight = FontWeight.SemiBold,
     ),
     labelSmall = defaultTypography.labelSmall.copy(fontFamily = RobotoFlex),
+)
+
+val Typography.summaryAmount: TextStyle get() = TextStyle(
+    fontFamily = RobotoFlex,
+    fontSize = 38.sp,
+    lineHeight = 46.sp,
+    fontWeight = FontWeight(650),
+    letterSpacing = (-0.5).sp,
 )
