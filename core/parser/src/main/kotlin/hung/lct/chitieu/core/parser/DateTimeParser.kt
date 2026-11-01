@@ -65,6 +65,7 @@ private val sessionTimes = mapOf(
 private data class DateTimeMatch(
     val localDateTime: LocalDateTime,
     val consumedCount: Int,
+    val type: DateTimeType = DateTimeType.DATE_EXPLICIT,
 )
 
 /**
@@ -75,14 +76,13 @@ object DateTimeParser {
     val DEFAULT_ZONE_ID: ZoneId = ZoneId.of("Asia/Ho_Chi_Minh")
 
     /**
-     * Trích xuất toàn bộ các mốc thời gian được nhắc tới trong câu.
+     * Trích xuất toàn bộ các mốc thời gian được nhắc tới trong danh sách tokens.
      */
     fun parseAll(
-        sentence: NormalizedSentence,
+        tokens: List<Token>,
         clock: Clock = Clock.systemDefaultZone(),
         zoneId: ZoneId = DEFAULT_ZONE_ID,
     ): List<ParsedDateTime> {
-        val tokens = sentence.tokens
         val zonedClock = clock.withZone(zoneId)
         val today = LocalDate.now(zonedClock)
         val currentTime = LocalTime.now(zonedClock)
@@ -101,6 +101,9 @@ object DateTimeParser {
                         startIndex = tokens[tokenStart].startIndex,
                         endIndex = tokens[tokenEnd].endIndex,
                         tokenRange = tokenStart..tokenEnd,
+                        confidence = 1.0,
+                        isDefault = false,
+                        type = match.type,
                     ),
                 )
                 i += match.consumedCount
@@ -112,14 +115,32 @@ object DateTimeParser {
     }
 
     /**
+     * Trích xuất toàn bộ các mốc thời gian được nhắc tới trong câu.
+     */
+    fun parseAll(
+        sentence: NormalizedSentence,
+        clock: Clock = Clock.systemDefaultZone(),
+        zoneId: ZoneId = DEFAULT_ZONE_ID,
+    ): List<ParsedDateTime> = parseAll(sentence.tokens, clock, zoneId)
+
+    /**
+     * Trích xuất mốc thời gian đầu tiên trong danh sách token hoặc trả về thời gian hiện tại nếu không có (FR-03).
+     */
+    fun parseOrDefault(
+        tokens: List<Token>,
+        clock: Clock = Clock.systemDefaultZone(),
+        zoneId: ZoneId = DEFAULT_ZONE_ID,
+    ): LocalDateTime = parseAll(tokens, clock, zoneId).firstOrNull()?.localDateTime
+        ?: LocalDateTime.now(clock.withZone(zoneId))
+
+    /**
      * Trích xuất mốc thời gian đầu tiên trong câu hoặc trả về thời gian hiện tại nếu không có (FR-03).
      */
     fun parseOrDefault(
         sentence: NormalizedSentence,
         clock: Clock = Clock.systemDefaultZone(),
         zoneId: ZoneId = DEFAULT_ZONE_ID,
-    ): LocalDateTime = parseAll(sentence, clock, zoneId).firstOrNull()?.localDateTime
-        ?: LocalDateTime.now(clock.withZone(zoneId))
+    ): LocalDateTime = parseOrDefault(sentence.tokens, clock, zoneId)
 }
 
 private object DateMatcher {
@@ -304,8 +325,18 @@ private object SessionMatcher {
         if (sessionTime == null || t2 == null) return null
 
         return when (t2) {
-            "qua" -> DateTimeMatch(today.minusDays(ONE_DAY).atTime(sessionTime), consumedCount = TOKEN_COUNT_THREE)
-            "nay" -> DateTimeMatch(today.atTime(sessionTime), consumedCount = TOKEN_COUNT_THREE)
+            "qua" -> DateTimeMatch(
+                today.minusDays(ONE_DAY).atTime(sessionTime),
+                consumedCount = TOKEN_COUNT_THREE,
+                type = DateTimeType.SESSION_WITH_MODIFIER,
+            )
+
+            "nay" -> DateTimeMatch(
+                today.atTime(sessionTime),
+                consumedCount = TOKEN_COUNT_THREE,
+                type = DateTimeType.SESSION_WITH_MODIFIER,
+            )
+
             else -> null
         }
     }
@@ -329,6 +360,7 @@ private object SessionMatcher {
                 DateTimeMatch(
                     today.minusDays(TWO_DAYS).atTime(currentTime),
                     consumedCount = TOKEN_COUNT_TWO,
+                    type = DateTimeType.DATE_EXPLICIT,
                 )
             } else {
                 null
@@ -344,7 +376,8 @@ private object SessionMatcher {
         currentTime: LocalTime,
     ): DateTimeMatch? {
         val time = if (t0 == "hom") currentTime else sessionTimes[t0]
-        return time?.let { DateTimeMatch(today.atTime(it), consumedCount = TOKEN_COUNT_TWO) }
+        val type = if (t0 == "hom") DateTimeType.DATE_EXPLICIT else DateTimeType.SESSION_WITH_MODIFIER
+        return time?.let { DateTimeMatch(today.atTime(it), consumedCount = TOKEN_COUNT_TWO, type = type) }
     }
 
     private fun matchQuaModifier(t0: String, today: LocalDate, currentTime: LocalTime): DateTimeMatch? {
@@ -358,7 +391,8 @@ private object SessionMatcher {
             else -> null
         } ?: return null
 
-        return DateTimeMatch(today.minusDays(offset).atTime(time), consumedCount = TOKEN_COUNT_TWO)
+        val type = if (t0 == "hom") DateTimeType.DATE_EXPLICIT else DateTimeType.SESSION_WITH_MODIFIER
+        return DateTimeMatch(today.minusDays(offset).atTime(time), consumedCount = TOKEN_COUNT_TWO, type = type)
     }
 
     private fun matchStandaloneSession(
@@ -382,7 +416,11 @@ private object SessionMatcher {
 
         return when {
             simpleTime != null && isClauseBoundary -> {
-                DateTimeMatch(today.atTime(simpleTime), consumedCount = TOKEN_COUNT_ONE)
+                DateTimeMatch(
+                    today.atTime(simpleTime),
+                    consumedCount = TOKEN_COUNT_ONE,
+                    type = DateTimeType.STANDALONE_SESSION,
+                )
             }
 
             token.unaccented == "trua" -> {
@@ -415,7 +453,11 @@ private object SessionMatcher {
             (prev.type == TokenType.NUMBER || prev.unaccented == "k" || prev.unaccented == "tr")
         val isMatch = isClauseBoundary || isAfterAmount
         return if (isMatch) {
-            DateTimeMatch(today.atTime(NOON_TIME), consumedCount = TOKEN_COUNT_ONE)
+            DateTimeMatch(
+                today.atTime(NOON_TIME),
+                consumedCount = TOKEN_COUNT_ONE,
+                type = DateTimeType.STANDALONE_SESSION,
+            )
         } else {
             null
         }

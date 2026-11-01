@@ -15,6 +15,8 @@ private const val ONE_MILLION = 1_000_000L
 private const val MAX_SINGLE_DIGIT = 9L
 private const val MAX_THREE_DIGIT = 999L
 private const val THREE = 3
+private const val FULL_CONFIDENCE = 1.0
+private const val BARE_NUMBER_CONFIDENCE = 0.8
 
 private val thousandUnits = setOf("k", "nghin", "ngan")
 private val millionUnits = setOf("tr", "trieu", "cu")
@@ -41,6 +43,7 @@ private val wordDigits = mapOf(
 private data class AmountMatch(
     val value: Long,
     val consumedCount: Int,
+    val confidence: Double = 1.0,
 )
 
 object AmountParser {
@@ -64,6 +67,7 @@ object AmountParser {
                         startIndex = tokens[tokenStart].startIndex,
                         endIndex = tokens[tokenEnd].endIndex,
                         tokenRange = tokenStart..tokenEnd,
+                        confidence = match.confidence,
                     ),
                 )
                 i += match.consumedCount
@@ -110,7 +114,8 @@ object AmountParser {
             it.type == TokenType.WORD && it.text in currencyUnits
         } == true
         val value = AmountMatcherHelper.evaluateStandalone(numToken, hasCurrency)
-        return value?.let { AmountMatch(it, if (hasCurrency) 2 else 1) }
+        val confidence = if (hasCurrency) FULL_CONFIDENCE else BARE_NUMBER_CONFIDENCE
+        return value?.let { AmountMatch(it, if (hasCurrency) 2 else 1, confidence) }
     }
 }
 
@@ -157,7 +162,7 @@ private object AmountMatcherHelper {
         } else {
             rawMatch.consumedCount
         }
-        return AmountMatch(rawMatch.value, finalConsumed)
+        return AmountMatch(rawMatch.value, finalConsumed, rawMatch.confidence)
     }
 
     private fun calculateMillionBonus(
