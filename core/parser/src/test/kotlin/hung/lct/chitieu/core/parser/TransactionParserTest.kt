@@ -1,6 +1,5 @@
 package hung.lct.chitieu.core.parser
 
-import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -28,7 +27,6 @@ class TransactionParserTest {
 
     // Mốc quy chiếu 2026-10-20T10:00:00+07:00 (Thứ Ba)
     private val clock = Clock.fixed(Instant.parse("2026-10-20T03:00:00Z"), zoneId)
-    private val json = Json { ignoreUnknownKeys = true }
 
     // 8 câu chuyển khoản hoãn sang S2-08 theo Nợ kỹ thuật
     private val skippedTransferCases = setOf(
@@ -152,9 +150,7 @@ class TransactionParserTest {
 
     @Test
     fun parseDataset_evaluatesAllFieldsAcrossAllClauses() {
-        val inputStream = javaClass.classLoader.getResourceAsStream("test_cases.json")
-        val content = inputStream!!.bufferedReader().use { it.readText() }
-        val dataset = json.decodeFromString<DatasetDto>(content)
+        val dataset = TestDatasetLoader.dataset
         val walletAliases = dataset.mockWallets.flatMap { it.aliases }
 
         var totalClauses = 0
