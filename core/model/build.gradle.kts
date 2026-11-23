@@ -1,7 +1,7 @@
 plugins {
-    id("chitieu.android.library")
+    id("chitieu.jvm.library")
 }
 
-android {
-    namespace = "hung.lct.chitieu.core.model"
+dependencies {
+    testImplementation(libs.junit)
 }
