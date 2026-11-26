@@ -4,6 +4,12 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import hung.lct.chitieu.core.database.converter.Converters
+import hung.lct.chitieu.core.database.dao.BudgetDao
+import hung.lct.chitieu.core.database.dao.CategoryDao
+import hung.lct.chitieu.core.database.dao.KeywordRuleDao
+import hung.lct.chitieu.core.database.dao.TransactionDao
+import hung.lct.chitieu.core.database.dao.TransactionStatsDao
+import hung.lct.chitieu.core.database.dao.WalletDao
 import hung.lct.chitieu.core.database.model.BudgetEntity
 import hung.lct.chitieu.core.database.model.CategoryEntity
 import hung.lct.chitieu.core.database.model.KeywordRuleEntity
@@ -20,4 +26,11 @@ import hung.lct.chitieu.core.database.model.WalletEntity
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
-abstract class ChiTieuDatabase : RoomDatabase()
+abstract class ChiTieuDatabase : RoomDatabase() {
+    abstract fun walletDao(): WalletDao
+    abstract fun categoryDao(): CategoryDao
+    abstract fun transactionDao(): TransactionDao
+    abstract fun transactionStatsDao(): TransactionStatsDao
+    abstract fun budgetDao(): BudgetDao
+    abstract fun keywordRuleDao(): KeywordRuleDao
+}

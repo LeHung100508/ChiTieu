@@ -123,4 +123,66 @@ class EntityMapperTest {
         )
         assertEquals(rule, rule.asEntity().asExternalModel())
     }
+
+    @Test
+    fun walletWithBalance_asExternalModel_mapsBalance() {
+        val walletEntity = WalletEntity(
+            id = 1L,
+            name = "Ví chính",
+            initialBalance = 0L,
+            icon = "wallet",
+            color = 0xFF1B6B4AL,
+        )
+        val row = WalletWithBalanceRow(
+            wallet = walletEntity,
+            currentBalance = -500_000L,
+        )
+        val result = row.asExternalModel()
+        assertEquals(walletEntity.asExternalModel(), result.wallet)
+        assertEquals(Money(-500_000L), result.balance)
+    }
+
+    @Test
+    fun categoryWithChildren_asExternalModel_sortsAndMapsTree() {
+        val parent = CategoryEntity(
+            id = 1L,
+            seedKey = "food_dining",
+            type = CategoryType.EXPENSE,
+            icon = "food",
+            color = 0xFF1B6B4AL,
+        )
+        val child2 = CategoryEntity(
+            id = 2L,
+            name = "Cà phê",
+            type = CategoryType.EXPENSE,
+            icon = "coffee",
+            color = 0xFF1B6B4AL,
+            parentId = 1L,
+            sortOrder = 2,
+        )
+        val child1 = CategoryEntity(
+            id = 3L,
+            name = "Ăn sáng",
+            type = CategoryType.EXPENSE,
+            icon = "breakfast",
+            color = 0xFF1B6B4AL,
+            parentId = 1L,
+            sortOrder = 1,
+        )
+        val row = CategoryWithChildrenRow(
+            category = parent,
+            children = listOf(child2, child1),
+        )
+        val result = row.asExternalModel()
+        assertEquals(parent.asExternalModel(), result.category)
+        assertEquals(listOf(child1.asExternalModel(), child2.asExternalModel()), result.children)
+    }
+
+    @Test
+    fun categoryTotalRow_asExternalModel_mapsMoney() {
+        val row = CategoryTotalRow(categoryId = 1L, total = 150_000L)
+        val result = row.asExternalModel()
+        assertEquals(1L, result.categoryId)
+        assertEquals(Money(150_000L), result.total)
+    }
 }
